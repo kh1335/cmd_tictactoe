@@ -1,6 +1,7 @@
 #!usr/bin/python
 
 import math
+import random
 
 #tic-tac-toe
 #[1,2,3]
@@ -60,13 +61,13 @@ def checkWinner(user, position):
     if len(usedPositions) >= (boardSize*2)-1:
         #check position corner
         if position == 1 or position == boardSize or position == total or position == (total-(boardSize-1)):
-            #check diagnal
+            #check diagnal 
             if position == 1 or position == total:
-                result = checkLeftDiagnals(user, position)
-            else:
+                result = checkLeftDiagnals(user, position)    
+            else: 
                 result = checkRightDiagnal(user, position)
         #check position middle
-        elif position%2 != 0 and math.ceil(total/2):
+        elif position%2 != 0 and math.ceil(total/2): 
             #check diagnals
             result = checkLeftDiagnals(user, position)
             if not result:
@@ -77,8 +78,14 @@ def checkWinner(user, position):
             result = checkRow(user, position)
         if not result:
            result = checkColumn(user, position)
-
+    
     return result
+
+def setupSelectedPosition(user,position):
+    usedPositions.append(position)
+    positions[int(position) - 1] = user
+    printBoard(positions)
+    return checkWinner(user,position)
 
 # two person function
 def selectPosition(user):
@@ -86,10 +93,7 @@ def selectPosition(user):
     while position in usedPositions:
         print str(position) + ' is already being used'
         position = int(raw_input(user + '\'s please choose a different number: '))
-    usedPositions.append(position)
-    positions[int(position) - 1] = user
-    printBoard(positions)
-    return checkWinner(user,position)
+    return position
 # end of functions
 
 
@@ -111,7 +115,6 @@ if game == 1:
     # user can choose easy or hard
     # easy will just choose a random number that is not being used
     # hard will go throud minmax algorithm to choose best location
-    '''
     print '1. easy'
     print '2. hard'
 
@@ -122,24 +125,31 @@ if game == 1:
 
     # let user choose X's or 0's
     # X's will go first
-    user = ''
-    while user not in ['X','O']:
-        user = raw_input('X\'s will go first. X\'s or O\'s (X or O): ').upper()
+    selectedUser = ''
+    while selectedUser not in ['X','O']:
+        selectedUser = raw_input('X\'s will go first. X\'s or O\'s (X or O): ').upper()
 
-    if level == 1:
-
+while startCount < total:
+    startCount += 1
+    if startCount%2 == 0:
+        user = 'O'
     else:
-    '''
-    print 'Coming Soon!'
-else:
-    #two player
-    printBoard(positions)
-    while startCount < total:
-        startCount += 1
-        if startCount%2 == 0:
-            user = 'O'
-        else:
-            user = 'X'
-        if selectPosition(user):
-            print 'GAME OVER ' + user + '\'s WIN!!!'
-            break
+        user = 'X'
+
+    if game == 2 or (game == 1 and selectedUser == user):
+        if startCount == 1:
+            printBoard(positions)
+
+        position = selectPosition(user) 
+    elif game == 1 and level == 1 and selectedUser != user:
+        print '-- Computers Turn --'
+        position = random.randrange(1,total+1)
+        while position in usedPositions:
+            position = random.randrange(1,total)
+    elif game == 1 and level == 2 and selectedUser != user:
+        print 'Coming Soon!'
+    
+    setupSelectedPosition(user,position)
+    if checkWinner(user,position):
+        print 'GAME OVER ' + user + '\'s WIN!!!'
+        break
